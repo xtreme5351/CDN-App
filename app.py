@@ -7,13 +7,26 @@ class CDNApp(QWidget):
             super(QWidget, self).__init__(parent)
         else:
             super().__init__()
-        self.start = QPushButton("Start calibration")
-        self.init_ui()
+        self.calibrate = QPushButton("Start calibration")
+        self.start = QPushButton("Start driving")
+        self.conn = QPushButton("Connect to car")
+        self.has_conn = False
+        self.has_calibrated = False
+        self.initUI()
 
-    def init_ui(self):
-        self.start.clicked.connect(self.onClicked)
+    def setButtons(self):
+        self.conn.clicked.connect(self.onConnect)
+        self.calibrate.clicked.connect(self.onCalibrate)
+        self.start.clicked.connect(self.onStart)
+        self.calibrate.setEnabled(self.has_conn)
+        self.start.setEnabled(self.has_calibrated)
+
+    def initUI(self):
+        self.setButtons()
 
         layout = QVBoxLayout()
+        layout.addWidget(self.conn)
+        layout.addWidget(self.calibrate)
         layout.addWidget(self.start)
 
         self.setGeometry(200, 200, 300, 150)
@@ -21,6 +34,15 @@ class CDNApp(QWidget):
         self.setWindowTitle('CDN Controller')
         self.show()
 
-    def onClicked(self):
-        # self.result.setText("HELLO")
-        print("HELLO")
+    def onCalibrate(self):
+        self.has_calibrated = True
+        self.start.setEnabled(self.has_calibrated)
+        print("Calibrating")
+
+    def onStart(self):
+        print("Starting")
+
+    def onConnect(self):
+        self.has_conn = True
+        self.calibrate.setEnabled(self.has_conn)
+        print("Connecting")
