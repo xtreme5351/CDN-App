@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
-from calibration import Calibrate
+from CDNManagers.calibration import Calibrate
+from CDNManagers.connection import Connect
 
 
 class CDNApp(QWidget):
@@ -8,11 +9,17 @@ class CDNApp(QWidget):
             super(QWidget, self).__init__(parent)
         else:
             super().__init__()
+        # Widgets to be used
         self.calibrate = QPushButton("Start calibration")
         self.start = QPushButton("Start driving")
         self.conn = QPushButton("Connect to car")
+        # Bools
         self.has_conn = False
         self.has_calibrated = False
+        # Managers
+        self.connectionManager = Connect()
+        self.calibrationManager = Calibrate()
+
         self.initUI()
 
     def setButtons(self):
@@ -38,7 +45,7 @@ class CDNApp(QWidget):
     def onCalibrate(self):
         self.has_calibrated = True
         self.start.setEnabled(self.has_calibrated)
-        Calibrate()
+        self.calibrationManager.start_calibration()
 
     def onStart(self):
         print("Starting")
@@ -46,4 +53,4 @@ class CDNApp(QWidget):
     def onConnect(self):
         self.has_conn = True
         self.calibrate.setEnabled(self.has_conn)
-        print("Connecting")
+        self.connectionManager.start_connection()
