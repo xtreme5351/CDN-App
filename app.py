@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import *
+from calibration import Calibrate
 
 
 class CDNApp(QWidget):
@@ -37,7 +38,7 @@ class CDNApp(QWidget):
     def onCalibrate(self):
         self.has_calibrated = True
         self.start.setEnabled(self.has_calibrated)
-        print("Calibrating")
+        Calibrate()
 
     def onStart(self):
         print("Starting")
