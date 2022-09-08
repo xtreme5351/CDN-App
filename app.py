@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
-from CDNManagers.calibration import Calibrate
-from CDNManagers.connection import Connect
+from CDNManagers import Calibrate
+from CDNManagers import Connect
+from CDNManagers import CV
 
 
 class CDNApp(QWidget):
@@ -49,6 +50,7 @@ class CDNApp(QWidget):
 
     def onStart(self):
         print("Starting")
+        CV.start(0)
 
     def onConnect(self):
         self.has_conn = True

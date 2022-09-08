@@ -1,4 +1,3 @@
-# Idk what to do here for now...
-# Maybe add some checks?
-
-print("Hello World")
+from CDNManagers.cv import CV
+from CDNManagers.calibration import Calibrate
+from CDNManagers.connection import Connect
