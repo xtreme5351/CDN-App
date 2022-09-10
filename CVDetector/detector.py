@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 from time import perf_counter
 
-
 np.random.seed(0)
+
 
 class Detector:
     def __init__(self, video_path, config_path, model_path, classes_path):
@@ -15,7 +15,7 @@ class Detector:
         # Setup network model
         self.network = cv2.dnn_DetectionModel(self.model_path, self.config_path)
         self.network.setInputSize(320, 320)
-        self.network.setInputScale(1.0/127.5)
+        self.network.setInputScale(1.0 / 127.5)
         self.network.setInputMean((127.5, 127.5, 127.5))
         self.network.setInputSwapRB(True)
 
@@ -31,7 +31,6 @@ class Detector:
         # Get random integer BGR colours for each class label
         self.colour_list = np.random.uniform(low=0, high=255, size=(len(self.classes_list), 3))
         self.colour_list = [tuple(map(int, colour)) for colour in self.colour_list]
-        
 
     def onVideo(self):
         capture = cv2.VideoCapture(self.video_path)
@@ -47,7 +46,7 @@ class Detector:
         while successful:
             # Calculate FPS
             end = perf_counter()
-            fps = 1/(end - start)
+            fps = 1 / (end - start)
             start = end
 
             # Detect objects in current frame with certainty of 50% or above
@@ -56,7 +55,7 @@ class Detector:
             # Change bounding boxes and confidences to lists
             bounding_boxes = list(bounding_boxes)
             confidences = list(np.array(confidences).reshape(1, -1)[0])
-            confidences = list(map(float, confidences)) # Changes confidences to floats
+            confidences = list(map(float, confidences))  # Changes confidences to floats
 
             # Eliminate bounding boxes with an overlap. This returns indexes of bounding boxes with overlap below certain threshold.
             bounding_boxes_ids = cv2.dnn.NMSBoxes(bounding_boxes, confidences, score_threshold=0.5, nms_threshold=0)
@@ -64,7 +63,6 @@ class Detector:
             if len(bounding_boxes_ids) != 0:
                 # Loop through valid boxes
                 for i in range(0, len(bounding_boxes_ids)):
-
                     idx = np.squeeze(bounding_boxes_ids[i])
                     curr_box = bounding_boxes[idx]
                     curr_confidence = confidences[idx]
@@ -86,7 +84,7 @@ class Detector:
             cv2.putText(image, f"FPS: {fps:.1f}", (20, 20), cv2.FONT_HERSHEY_DUPLEX, 0.4, (0, 0, 255), 1)
             # Show the object bounding boxes on the image
             cv2.imshow("Result", cv2.resize(image, (1600, 900)))
-            
+
             # Quit loop functionality
             # The & 0xFF is used to take the last byte of the key press since numlock can sometimes change the first byte of a key press. 
             # 0xFF just represents 11111111 (8 1s).
@@ -96,7 +94,6 @@ class Detector:
 
             # Get next frame
             successful, image = capture.read()
-        
+
         # Destroy all cv2 windows when video stream breaks
         cv2.destroyAllWindows()
-            
