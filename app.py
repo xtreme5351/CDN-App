@@ -20,7 +20,7 @@ class CDNApp(QWidget):
         # Managers
         self.connectionManager = Connect()
         self.calibrationManager = Calibrate()
-
+        self.cv = CV()
         self.initUI()
 
     def setButtons(self):
@@ -50,7 +50,7 @@ class CDNApp(QWidget):
 
     def onStart(self):
         print("Starting")
-        CV.start(0)
+        self.cv.start()
 
     def onConnect(self):
         self.has_conn = True

@@ -3,15 +3,19 @@ import os
 
 
 class CV:
-    @staticmethod
-    def start(vid_path=0):
-        """vid_path '0' represents default device camera."""
+    def __init__(self):
+        pass
 
-        config_path = "/Users/pc/PycharmProjects/cdn_app/CVDetector/data/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
-        model_path = "/Users/pc/PycharmProjects/cdn_app/CVDetector/data/frozen_inference_graph.pb"
+    @staticmethod
+    def get_abs_file_paths(path):
+        return os.path.abspath(path)
+
+    def start(self, vid_path=0):
+        config_path = self.get_abs_file_paths("CVDetector/data/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt")
+        model_path = self.get_abs_file_paths("CVDetector/data/frozen_inference_graph.pb")
         # the above poos when this = os.path.join is used
         #  Hard coded for now, just to make sure it works
-        classes_path = "/Users/pc/PycharmProjects/cdn_app/CVDetector/data/coco.names"
+        classes_path = self.get_abs_file_paths("CVDetector/data/coco.names")
 
         detector = Detector(vid_path, config_path, model_path, classes_path)
         detector.onVideo()
