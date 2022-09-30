@@ -1,3 +1,5 @@
-from CDNManagers.cv import CV
+import CDNManagers
+from CDNManagers.detector import Detector
 from CDNManagers.calibration import Calibrate
 from CDNManagers.connection import Connect
+from CDNManagers.cv import CV

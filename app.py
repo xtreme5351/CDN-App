@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import *
+from CDNManagers import Detector
 from CDNManagers import Calibrate
 from CDNManagers import Connect
 from CDNManagers import CV
