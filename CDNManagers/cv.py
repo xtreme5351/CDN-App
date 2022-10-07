@@ -33,6 +33,9 @@ class CV:
     def start(self):
         self.detector.onVideo()
 
+    def stop(self):
+        self.detector.offVideo()
+
 
 def main():
     # vid path 0 represents webcam

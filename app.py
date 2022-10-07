@@ -15,9 +15,11 @@ class CDNApp(QWidget):
         self.calibrate = QPushButton("Start calibration")
         self.start = QPushButton("Start driving")
         self.conn = QPushButton("Connect to car")
+        self.stop = QPushButton("Stop driving")
         # Bools
         self.has_conn = False
         self.has_calibrated = False
+        self.has_started = True
         # Managers
         self.connectionManager = Connect()
         self.calibrationManager = Calibrate()
@@ -30,6 +32,7 @@ class CDNApp(QWidget):
         self.start.clicked.connect(self.onStart)
         self.calibrate.setEnabled(self.has_conn)
         self.start.setEnabled(self.has_calibrated)
+        self.stop.setEnabled(self.has_started)
 
     def initUI(self):
         self.setButtons()
@@ -38,6 +41,7 @@ class CDNApp(QWidget):
         layout.addWidget(self.conn)
         layout.addWidget(self.calibrate)
         layout.addWidget(self.start)
+        layout.addWidget(self.stop)
 
         self.setGeometry(200, 200, 300, 150)
         self.setLayout(layout)
@@ -51,7 +55,13 @@ class CDNApp(QWidget):
 
     def onStart(self):
         print("Starting")
+        self.has_started = True
         self.cv.start()
+
+    def onStop(self):
+        print("Stopping")
+        self.has_started = False
+        self.cv.stop()
 
     def onConnect(self):
         self.has_conn = True

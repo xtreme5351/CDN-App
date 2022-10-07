@@ -32,6 +32,12 @@ class Detector:
         self.colour_list = np.random.uniform(low=0, high=255, size=(len(self.classes_list), 3))
         self.colour_list = [tuple(map(int, colour)) for colour in self.colour_list]
 
+    def offVideo(self):
+        # DOESNT WORK FOR MAC, WE HAVE TO USE startWindowThread() for this to work
+        # Should work on windows, skill issue tbh
+        cv2.waitKey(1)
+        cv2.destroyWindows('frame')
+
     def onVideo(self):
         capture = cv2.VideoCapture(self.video_path)
 
