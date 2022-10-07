@@ -1,3 +1,4 @@
+from sys import maxsize
 import cv2
 import numpy as np
 from time import perf_counter
@@ -64,7 +65,7 @@ class Detector:
             confidences = list(map(float, confidences))  # Changes confidences to floats
 
             # Eliminate bounding boxes with an overlap. This returns indexes of bounding boxes with overlap below certain threshold.
-            bounding_boxes_ids = cv2.dnn.NMSBoxes(bounding_boxes, confidences, score_threshold=0.5, nms_threshold=0)
+            bounding_boxes_ids = cv2.dnn.NMSBoxes(bounding_boxes, confidences, score_threshold=0.5, nms_threshold=maxsize)
 
             if len(bounding_boxes_ids) != 0:
                 # Loop through valid boxes
