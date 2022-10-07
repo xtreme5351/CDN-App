@@ -52,6 +52,7 @@ class CDNApp(QWidget):
         self.conn.clicked.connect(self.onConnect)
         self.calibrate.clicked.connect(self.onCalibrate)
         self.start.clicked.connect(self.onStart)
+        self.stop.clicked.connect(self.onStop)
         self.calibrate.setEnabled(self.has_conn)
         self.start.setEnabled(self.has_calibrated)
         self.stop.setEnabled(self.has_started)

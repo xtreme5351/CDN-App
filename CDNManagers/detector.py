@@ -11,6 +11,7 @@ class Detector:
         self.config_path = config_path
         self.model_path = model_path
         self.classes_path = classes_path
+        self.running = False
 
         # Setup network model
         self.network = cv2.dnn_DetectionModel(self.model_path, self.config_path)
@@ -33,10 +34,8 @@ class Detector:
         self.colour_list = [tuple(map(int, colour)) for colour in self.colour_list]
 
     def offVideo(self):
-        # DOESNT WORK FOR MAC, WE HAVE TO USE startWindowThread() for this to work
-        # Should work on windows, skill issue tbh
-        cv2.waitKey(1)
-        cv2.destroyWindows('frame')
+        self.running = False
+        cv2.destroyAllWindows()
 
     def onVideo(self):
         capture = cv2.VideoCapture(self.video_path)
@@ -49,7 +48,8 @@ class Detector:
 
         # Keep looping through frames while the frames are successfully loaded
         start = perf_counter()
-        while successful:
+        self.running = True
+        while successful and self.running:
             # Calculate FPS
             end = perf_counter()
             fps = 1 / (end - start)
