@@ -1,4 +1,4 @@
-from CDNManagers import Detector
+from CDNManagers import Detector, CV
 import os
 
 def main():
@@ -9,7 +9,9 @@ def main():
     classes_path = os.path.abspath("CDNManagers\data\coco.names")
 
     detector = Detector(vid_path, config_path, model_path, classes_path)
-    detector.onVideo()
+    
+    cv = CV(detector, "stop sign")
+    cv.start()
 
 
 if __name__ == "__main__":

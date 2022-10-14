@@ -38,7 +38,7 @@ class Detector:
         self.running = False
         cv2.destroyAllWindows()
 
-    def onVideo(self):
+    def onVideo(self, tracked_obj: str=None):
         capture = cv2.VideoCapture(self.video_path)
 
         if not capture.isOpened():
@@ -86,6 +86,12 @@ class Detector:
 
                     # Draw text
                     cv2.putText(image, f"{curr_label}: {curr_confidence:.3f}", (x, y - 10), cv2.FONT_HERSHEY_DUPLEX, 0.4, curr_colour)
+
+                    # Print out bbx for wanted 
+                    if tracked_obj:
+                        if curr_label == tracked_obj:
+                            print(curr_box)
+
 
             # Draw FPS
             cv2.putText(image, f"FPS: {fps:.1f}", (20, 20), cv2.FONT_HERSHEY_DUPLEX, 0.4, (0, 0, 255), 1)
