@@ -91,6 +91,12 @@ class Detector:
                     if tracked_obj:
                         if curr_label == tracked_obj:
                             print(curr_box)
+                            image_width = image.shape[1]
+
+                            #Assuming FOV is 60 (maybe a parameter should be added)
+                            field_of_view = 60
+                            direction_angle = field_of_view*((x+(w/2))/image_width)-(field_of_view/2)
+                            print(direction_angle)
 
 
             # Draw FPS
