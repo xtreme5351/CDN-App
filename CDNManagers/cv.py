@@ -4,7 +4,7 @@ import os
 
 class CV:
     def __init__(self):
-        self.paths = self.resolve_files(True)
+        self.paths = self.resolve_files()
         self.detector = Detector(self.paths[0], self.paths[1], self.paths[2], self.paths[3])
 
     @staticmethod
@@ -15,11 +15,11 @@ class CV:
     def resolve_files(debug=False):
         vid_path = 0
         if not debug:
-            config_path = os.path.abspath("ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt")
-            model_path = os.path.abspath("frozen_inference_graph.pb")
+            config_path = os.path.abspath("CDNManagers/data/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt")
+            model_path = os.path.abspath("CDNManagers/data/frozen_inference_graph.pb")
             # the above absolutely shits itself
             #  Use debug path for now
-            classes_path = os.path.abspath("coco.names")
+            classes_path = os.path.abspath("CDNManagers/data/coco.names")
         else:
             print("L tbh, using debug path")
             # config_path = "/Users/pc/PycharmProjects/cdn_app/CDNManagers/data/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"

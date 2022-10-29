@@ -19,7 +19,7 @@ class CDNApp(QWidget):
         # Bools
         self.has_conn = False
         self.has_calibrated = False
-        self.has_started = True
+        self.has_started = False
         # Managers
         self.connectionManager = Connect()
         self.calibrationManager = Calibrate()
