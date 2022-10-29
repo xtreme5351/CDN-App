@@ -1,3 +1,4 @@
+from sys import maxsize
 import cv2
 import numpy as np
 from time import perf_counter
@@ -11,6 +12,7 @@ class Detector:
         self.config_path = config_path
         self.model_path = model_path
         self.classes_path = classes_path
+        self.running = False
 
         # Setup network model
         self.network = cv2.dnn_DetectionModel(self.model_path, self.config_path)
@@ -33,12 +35,10 @@ class Detector:
         self.colour_list = [tuple(map(int, colour)) for colour in self.colour_list]
 
     def offVideo(self):
-        # DOESNT WORK FOR MAC, WE HAVE TO USE startWindowThread() for this to work
-        # Should work on windows, skill issue tbh
-        cv2.waitKey(1)
-        cv2.destroyWindows('frame')
+        self.running = False
+        cv2.destroyAllWindows()
 
-    def onVideo(self):
+    def onVideo(self, tracked_obj: str=None):
         capture = cv2.VideoCapture(self.video_path)
 
         if not capture.isOpened():
@@ -49,7 +49,8 @@ class Detector:
 
         # Keep looping through frames while the frames are successfully loaded
         start = perf_counter()
-        while successful:
+        self.running = True
+        while successful and self.running:
             # Calculate FPS
             end = perf_counter()
             fps = 1 / (end - start)
@@ -64,7 +65,7 @@ class Detector:
             confidences = list(map(float, confidences))  # Changes confidences to floats
 
             # Eliminate bounding boxes with an overlap. This returns indexes of bounding boxes with overlap below certain threshold.
-            bounding_boxes_ids = cv2.dnn.NMSBoxes(bounding_boxes, confidences, score_threshold=0.5, nms_threshold=0)
+            bounding_boxes_ids = cv2.dnn.NMSBoxes(bounding_boxes, confidences, score_threshold=0.5, nms_threshold=maxsize)
 
             if len(bounding_boxes_ids) != 0:
                 # Loop through valid boxes
@@ -85,6 +86,18 @@ class Detector:
 
                     # Draw text
                     cv2.putText(image, f"{curr_label}: {curr_confidence:.3f}", (x, y - 10), cv2.FONT_HERSHEY_DUPLEX, 0.4, curr_colour)
+
+                    # Print out bbx for wanted 
+                    if tracked_obj:
+                        if curr_label == tracked_obj:
+                            print(curr_box)
+                            image_width = image.shape[1]
+
+                            #Assuming FOV is 60 (maybe a parameter should be added)
+                            field_of_view = 60
+                            direction_angle = field_of_view*((x+(w/2))/image_width)-(field_of_view/2)
+                            print(direction_angle)
+
 
             # Draw FPS
             cv2.putText(image, f"FPS: {fps:.1f}", (20, 20), cv2.FONT_HERSHEY_DUPLEX, 0.4, (0, 0, 255), 1)
