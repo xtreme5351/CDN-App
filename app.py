@@ -6,23 +6,11 @@ from CDNManagers import Connect
 from CDNManagers import CV
 
 
-def resolve_files(debug=False) -> tuple:
+def resolve_files() -> tuple:
     vid_path = 0
-    if not debug:
-        config_path = os.path.abspath("CDNManagers\data\ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt")
-        model_path = os.path.abspath("CDNManagers\data\\frozen_inference_graph.pb")
-        # the above absolutely shits itself
-        #  Use debug path for now
-        classes_path = os.path.abspath("CDNManagers\data\coco.names")
-        print(config_path, model_path, classes_path)
-    else:
-        print("L tbh, using debug path")
-        # config_path = "/Users/pc/PycharmProjects/cdn_app/CDNManagers/data/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
-        config_path = "/Users/pc/PycharmProjects/cdn_app/CDNManagers/data/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
-        model_path = "/Users/pc/PycharmProjects/cdn_app/CDNManagers/data/frozen_inference_graph.pb"
-        # the above poos when this = os.path.join is used
-        #  Hard coded for now, just to make sure it works
-        classes_path = "/Users/pc/PycharmProjects/cdn_app/CDNManagers/data/coco.names"
+    config_path = os.path.abspath("CDNManagers/data/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt")
+    model_path = os.path.abspath("CDNManagers/data/frozen_inference_graph.pb")
+    classes_path = os.path.abspath("CDNManagers/data/coco.names")
     return vid_path, config_path, model_path, classes_path
 
 
@@ -45,7 +33,7 @@ class CDNApp(QWidget):
         self.connectionManager = Connect()
         self.calibrationManager = Calibrate()
         self.detector = Detector(*resolve_files())
-        self.cv = CV(self.detector)
+        self.cv = CV(self.detector, "")
         self.initUI()
 
     def setButtons(self):
@@ -74,7 +62,7 @@ class CDNApp(QWidget):
     def onCalibrate(self):
         self.has_calibrated = True
         self.start.setEnabled(self.has_calibrated)
-        self.calibrationManager.start_calibration()
+        self.calibrationManager.start_calibration("TEST INPUT, REMOVE")
 
     def onStart(self):
         print("Starting")
