@@ -33,7 +33,8 @@ class CDNApp(QWidget):
         self.connectionManager = Connect()
         self.calibrationManager = Calibrate()
         self.detector = Detector(*resolve_files())
-        self.cv = CV(self.detector, "")
+        self.cv = CV(self.detector, "stop sign")
+        self.controller = CarControl(self.detector)
         self.initUI()
 
     def setButtons(self):

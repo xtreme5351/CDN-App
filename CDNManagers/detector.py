@@ -23,6 +23,11 @@ class Detector:
 
         self.readClasses()
 
+        # Tracked object properties
+        self.relative_distance = None
+        self.relative_angle = None # Right is positive angle, left is negative angle
+        self.object_bbx = None
+
     def readClasses(self):
         with open(self.classes_path, "r") as file:
             self.classes_list = file.read().splitlines()
@@ -90,14 +95,12 @@ class Detector:
                     # Print out bbx for wanted 
                     if tracked_obj:
                         if curr_label == tracked_obj:
-                            print(curr_box)
                             image_width = image.shape[1]
 
                             #Assuming FOV is 60 (maybe a parameter should be added)
                             field_of_view = 60
                             direction_angle = field_of_view*((x+(w/2))/image_width)-(field_of_view/2)
-                            print(direction_angle)
-
+                            self.relative_angle = direction_angle
 
             # Draw FPS
             cv2.putText(image, f"FPS: {fps:.1f}", (20, 20), cv2.FONT_HERSHEY_DUPLEX, 0.4, (0, 0, 255), 1)
