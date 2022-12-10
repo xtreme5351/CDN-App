@@ -2,8 +2,6 @@
 # This is the client, the RPI is the server
 
 import socket
-import fcntl
-import struct
 from netifaces import AF_INET, ifaddresses
 
 

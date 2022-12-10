@@ -4,6 +4,7 @@ from CDNManagers import Detector
 from CDNManagers import Calibrate
 from CDNManagers import Connect
 from CDNManagers import CV
+from CDNManagers import CarControl
 
 
 def resolve_files() -> tuple:

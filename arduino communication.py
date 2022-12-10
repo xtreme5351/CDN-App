@@ -11,6 +11,6 @@ while True:
     num = input("Enter a number: ") # Taking input from user
     value = write_read(num)
     print(value)
-    while arduino.readline() != b'A':
+    while arduino.readline().decode('utf-8').rstrip() != 'A':
         pass
     print("COMPLETE")
