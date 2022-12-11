@@ -5,12 +5,11 @@ from random import randint
 
 class CarControl:
 
-    arduino_connected = False
-
     def __init__(self, _detector):
         self.detector = _detector
+        self.arduino_connected = False
 
-    def ControlSetup():
+    def ControlSetup(self):
         try:
             arduino = serial.Serial(port='COM4', baudrate=115200, timeout=.1)
             key = randint(0, 255)

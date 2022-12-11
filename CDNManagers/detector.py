@@ -7,6 +7,7 @@ np.random.seed(0)
 
 
 class Detector:
+
     def __init__(self, video_path, config_path, model_path, classes_path):
         self.video_path = video_path
         self.config_path = config_path
@@ -22,6 +23,14 @@ class Detector:
         self.network.setInputSwapRB(True)
 
         self.readClasses()
+        
+        self.is_calibrating = False
+        self.is_driving = False
+
+        self.calibrated_x = None
+        self.calibrated_y = None
+
+        self.correctly_calibrated = False
 
         # Tracked object properties
         self.relative_distance = None
@@ -95,12 +104,23 @@ class Detector:
                     # Print out bbx for wanted 
                     if tracked_obj:
                         if curr_label == tracked_obj:
-                            image_width = image.shape[1]
+                            if self.is_calibrating:
+                                self.calibrated_x = image.shape[1]
+                                self.calibrated_y = image.shape[0]
+                                self.correctly_calibrated = True
+                                print("Calibration successful! You may drive.")
+                                self.is_calibrating = False
+                            
+                            elif self.is_driving and self.correctly_calibrated:
+                                image_width = image.shape[1]
+                                image_height = image.shape[0]
+                                #Assuming FOV is 60 (maybe a parameter should be added)
+                                field_of_view = 60
+                                direction_angle = field_of_view*((x+(w/2))/image_width)-(field_of_view/2)
+                                self.relative_angle = direction_angle
 
-                            #Assuming FOV is 60 (maybe a parameter should be added)
-                            field_of_view = 60
-                            direction_angle = field_of_view*((x+(w/2))/image_width)-(field_of_view/2)
-                            self.relative_angle = direction_angle
+                                self.relative_distance = ((self.calibrated_x/image_width)+(self.calibrated_y/image_height))/2
+
 
             # Draw FPS
             cv2.putText(image, f"FPS: {fps:.1f}", (20, 20), cv2.FONT_HERSHEY_DUPLEX, 0.4, (0, 0, 255), 1)
