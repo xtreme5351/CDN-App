@@ -8,6 +8,12 @@ class Helper(QObject):
     @pyqtSlot()
     def OnStart(self):
         print("Start")
+    @pyqtSlot()        
+    def OnCalibrate(self):
+        print("Calibrate")
+    @pyqtSlot()
+    def OnParameters(self):
+        print("Parameters")
 
 app = QGuiApplication(sys.argv)
 

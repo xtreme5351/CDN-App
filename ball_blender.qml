@@ -10,6 +10,9 @@ ApplicationWindow {
     width: 3200
     height: 1800
     title: "Blender"
+    property int circle_diameter: 900
+    property int circle_thickness: 60
+    property int cluster_button_offset: 120
 
     LinearGradient {
         anchors.fill: parent
@@ -29,7 +32,7 @@ ApplicationWindow {
         id: start_button
         enabled: true
         visible: true
-        anchors.centerIn: parent;
+        anchors.centerIn: parent
         Item{
             anchors.centerIn: parent;
             width: 700
@@ -50,30 +53,295 @@ ApplicationWindow {
             
         }
         SequentialAnimation{
-            id: animation
+            id: start_button_animation
             running: false
+            PropertyAction { target: start_button; property: "enabled"; value: false}
+            PropertyAction { target: rect; property: "border.color"; value: "red" }
             ScaleAnimator { target: image; from: 1; to: 0; duration: 750; easing.type: Easing.InQuart}
             PropertyAction { target: image; property: "source"; value: "tick.png" }
             PropertyAction { target: overlay; property: "color"; value: "green" }
             PropertyAction { target: rect; property: "border.color"; value: "green" }
             ScaleAnimator { target: image; from: 0; to: 1.5; duration: 750; easing.type: Easing.OutQuart}
-            PropertyAction { target: start_button; property: "enabled"; value: false}
+            PropertyAction { target: ring; property: "visible"; value: true}
+            PropertyAction { target: calibrate_button; property: "visible"; value: true}
+            PropertyAction { target: parameters_button; property: "visible"; value: true}
+            PropertyAction { target: divider; property: "visible"; value: true}
+            ParallelAnimation{
+                ScaleAnimator { target: image; from: 1.5; to: 0; duration: 750; easing.type: Easing.InQuart}
+
+                PropertyAnimation { target: ring.border ; property: "color"; to: "#1b7bab"; duration: 1500 }
+
+                NumberAnimation { target: calibrate_button; property: "opacity"; from: 0; to: 1; easing.type: Easing.InQuart; duration: 1500}
+                NumberAnimation { target: calibrate_button; property: "y"; to: (circle_diameter/2)-cluster_button_offset*2; easing.type: Easing.OutQuad; duration: 1500}
+                NumberAnimation { target: parameters_button; property: "opacity"; from: 0; to: 1; easing.type: Easing.InQuart; duration: 1500}
+                NumberAnimation { target: parameters_button; property: "y"; to: circle_diameter/2; easing.type: Easing.OutQuad; duration: 1500}
+                NumberAnimation { target: divider; property: "opacity"; from: 0; to: 1; easing.type: Easing.InQuart; duration: 1500}
+            }
+            PropertyAction { target: calibrate_button; property: "enabled"; value: true}
+            PropertyAction { target: parameters_button; property: "enabled"; value: true}
+            
             PropertyAction { target: start_button; property: "visible"; value: false}
+            
         }
         background: Rectangle {
             id: rect
-            implicitWidth: start_button.hovered ? 920 : 900
-            implicitHeight: start_button.hovered ? 920 : 900
-            border.width: start_button.hovered ? 80 : 60
+            implicitWidth: start_button.hovered ? circle_diameter + 20 : circle_diameter
+            implicitHeight: start_button.hovered ? circle_diameter + 20 : circle_diameter
+            border.width: start_button.hovered ? circle_thickness + 20 : circle_thickness
             border.color: "red"
-            radius: start_button.hovered ? 455 : 450
+            radius: start_button.hovered ? (circle_diameter + 10)/2 : circle_diameter/2
             color: "transparent"
         }
         onClicked: {
             helper.OnStart()
-            animation.running = true
+            start_button_animation.running = true
         }
     }
+
+    
+
+    Item{
+        id: cluster
+        anchors.centerIn: parent
+        width: circle_diameter
+        height: width
+        Button{
+            id: calibrate_button
+            enabled: false
+            visible: false
+            opacity: 0
+            y: -cluster_button_offset
+            Text{
+                anchors.centerIn: parent
+                text: "Calibrate"
+                color: "white"
+                font.pointSize: calibrate_button.hovered ? 24 : 20
+            }
+            background: Rectangle{
+                color: "transparent"
+                border.width: 0
+                implicitWidth: circle_diameter
+                implicitHeight: cluster_button_offset*2
+            }
+            onClicked: {
+                helper.OnCalibrate()
+            }   
+        }
+
+        Button{
+            id: parameters_button
+            enabled: false
+            visible: false
+            opacity: 0
+            y: circle_diameter+cluster_button_offset
+            Text{
+                anchors.centerIn: parent
+                text: "Parameters"
+                color: "white"
+                font.pointSize: parameters_button.hovered ? 24 : 20
+            }
+            background: Rectangle{
+                color: "transparent"
+                border.width: 0
+                implicitWidth: circle_diameter
+                implicitHeight: cluster_button_offset*2
+            }
+            onClicked: {
+                parameters_button_animation.running = true
+            }
+        }
+        
+        Rectangle{
+            id: ring
+            visible: false
+            anchors.centerIn: parent
+            implicitWidth: circle_diameter
+            implicitHeight: circle_diameter
+            border.width: circle_thickness
+            border.color: "green"
+            radius: circle_diameter/2
+            color: "transparent"
+        }
+
+        Rectangle{
+            id: divider
+            visible: false
+            anchors.centerIn: parent
+            implicitWidth: circle_diameter - (circle_thickness * 2) - 60
+            implicitHeight: 5
+            border.width: 0
+            color: "white"
+        }
+
+        SequentialAnimation{
+            id: parameters_button_animation
+            running: false
+            PropertyAction { target: calibrate_button; property: "enabled"; value: false}
+            PropertyAction { target: parameters_button; property: "enabled"; value: false}
+            PropertyAction { target: parameters_page; property: "visible"; value: true}
+            ParallelAnimation{
+                ScaleAnimator { target: ring; from: 1; to: 3.5; duration: 1000; easing.type: Easing.InOutQuart}
+                PropertyAnimation { target: parameters_button; property: "opacity"; to: 0; easing.type: Easing.OutQuart; duration: 1000}
+                PropertyAnimation { target: calibrate_button; property: "opacity"; to: 0; easing.type: Easing.OutQuart; duration: 1000}
+                PropertyAnimation { target: divider; property: "opacity"; to: 0; easing.type: Easing.OutQuart; duration: 1000}
+                PropertyAnimation { target: parameters_page; property: "opacity"; to: 1; easing.type: Easing.InQuart; duration: 1000}
+                NumberAnimation { target: ring; property: "border.width"; to: circle_thickness/3.5; easing.type: Easing.InOutQuart; duration: 1000}
+            }
+            PropertyAction { target: calibrate_button; property: "visible"; value: false}
+            PropertyAction { target: parameters_button; property: "visible"; value: false}
+            PropertyAction { target: parameters_page; property: "enabled"; value: true}
+        }
+    }
+
+    Item{
+        id: parameters_page
+        anchors.centerIn: parent
+
+        enabled: false
+        visible: false
+        opacity: 0
+
+        property int text_size: 16
+        property string text_colour: "white"
+        property int column_spacing: 60
+        property int row_spacing: 30
+        property int int_input_width: 120
+        property int str_input_width: 500
+        property int input_text_size: 14
+        property int input_height: 70
+        property int input_border_thickness: 5
+        property int input_radius: 10
+        property string input_border_colour: "white"
+        property string input_colour: "transparent"
+        property string placeholder_text_colour: "#858585"
+        
+        Column{
+            spacing: 150
+            anchors.centerIn: parent
+            Row{
+                spacing: parameters_page.row_spacing
+                Column{
+                    spacing: parameters_page.column_spacing
+                    Text{
+                        text: "Integer input:"
+                        anchors.right: parent.right
+                        color: parameters_page.text_colour
+                        font.pointSize: parameters_page.text_size
+                    }
+                    Text{
+                        text: "Double input:"
+                        anchors.right: parent.right
+                        color: parameters_page.text_colour
+                        font.pointSize: parameters_page.text_size
+                    }
+                    Text{
+                        text: "String input:"
+                        anchors.right: parent.right
+                        color: parameters_page.text_colour
+                        font.pointSize: parameters_page.text_size
+                    }
+                    
+                
+                }
+
+                Column{
+                    spacing: parameters_page.column_spacing
+                    TextField{
+                        placeholderText: qsTr("Int")
+                        validator: IntValidator{bottom:0; top:999}
+                        placeholderTextColor: parameters_page.placeholder_text_colour
+                        color: parameters_page.text_colour
+                        font.pointSize: parameters_page.input_text_size
+                        horizontalAlignment: TextInput.AlignHCenter
+                        background: Rectangle{
+                            color: parameters_page.input_colour
+                            border.width: parameters_page.input_border_thickness
+                            border.color: parameters_page.input_border_colour
+                            radius: parameters_page.input_radius
+                            implicitWidth: parameters_page.int_input_width
+                            implicitHeight: parameters_page.input_height
+                        }
+                    }
+                    TextField{
+                        placeholderText: qsTr("Double")
+                        validator: DoubleValidator{bottom:0; top:999}
+                        placeholderTextColor: parameters_page.placeholder_text_colour
+                        color: parameters_page.text_colour
+                        font.pointSize: parameters_page.input_text_size
+                        horizontalAlignment: TextInput.AlignHCenter
+                        background: Rectangle{
+                            color: parameters_page.input_colour
+                            border.width: parameters_page.input_border_thickness
+                            border.color: parameters_page.input_border_colour
+                            radius: parameters_page.input_radius
+                            implicitWidth: parameters_page.int_input_width
+                            implicitHeight: parameters_page.input_height
+                        }
+                    }
+                    TextField{
+                        placeholderText: qsTr("String")
+                        placeholderTextColor: parameters_page.placeholder_text_colour
+                        color: parameters_page.text_colour
+                        font.pointSize: parameters_page.input_text_size
+                        horizontalAlignment: TextInput.AlignHCenter
+                        background: Rectangle{
+                            color: parameters_page.input_colour
+                            border.width: parameters_page.input_border_thickness
+                            border.color: parameters_page.input_border_colour
+                            radius: parameters_page.input_radius
+                            implicitWidth: parameters_page.str_input_width
+                            implicitHeight: parameters_page.input_height
+                        }
+                    }
+                
+                }
+            }
+            
+            Button{
+                anchors.horizontalCenter: parent.horizontalCenter
+                id: parameters_page_return_button
+                Text{
+                    anchors.centerIn: parent
+                    text: "Return"
+                    color: "white"
+                    font.pointSize:  14
+                }
+                background: Rectangle{
+                    color: "transparent"
+                    border.width: parameters_page_return_button.hovered ? parameters_page.input_border_thickness * 2 : parameters_page.input_border_thickness
+                    border.color: parameters_page.input_border_colour
+                    implicitWidth: parameters_page_return_button.hovered ? parameters_page.input_border_thickness + 200 : 200
+                    implicitHeight: parameters_page.input_height
+                    radius: parameters_page.input_radius
+                }
+                onClicked: {
+                    helper.OnParameters()
+                    parameters_page_return_button_animation.running = true
+                }
+            }
+        }
+
+        SequentialAnimation{
+            id: parameters_page_return_button_animation
+            running: false
+            PropertyAction { target: calibrate_button; property: "visible"; value: true}
+            PropertyAction { target: parameters_button; property: "visible"; value: true}
+            PropertyAction { target: parameters_page; property: "enabled"; value: false}
+            ParallelAnimation{
+                ScaleAnimator { target: ring; from: 3.5; to: 1; duration: 1000; easing.type: Easing.InOutQuart}
+                PropertyAnimation { target: parameters_button; property: "opacity"; to: 1; easing.type: Easing.InQuart; duration: 1000}
+                PropertyAnimation { target: calibrate_button; property: "opacity"; to: 1; easing.type: Easing.InQuart; duration: 1000}
+                PropertyAnimation { target: divider; property: "opacity"; to: 1; easing.type: Easing.InQuart; duration: 1000}
+                PropertyAnimation { target: parameters_page; property: "opacity"; to: 0; easing.type: Easing.OutQuart; duration: 1000}
+                NumberAnimation { target: ring; property: "border.width"; to: circle_thickness; easing.type: Easing.InOutQuart; duration: 1000}
+            }
+            PropertyAction { target: calibrate_button; property: "enabled"; value: true}
+            PropertyAction { target: parameters_button; property: "enabled"; value: true}
+            PropertyAction { target: parameters_page; property: "visible"; value: false}
+        }
+        
+    }
+
     
 
 }
