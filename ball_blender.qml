@@ -10,6 +10,7 @@ ApplicationWindow {
     width: 3200
     height: 1800
     title: "Blender"
+    id: window
     property int circle_diameter: 900
     property int circle_thickness: 60
     property int cluster_button_offset: 120
@@ -102,11 +103,14 @@ ApplicationWindow {
 
     Item{
         id: cluster
-        anchors.centerIn: parent
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: 0
         width: circle_diameter
         height: width
         Button{
             id: calibrate_button
+            property bool begin_calibration: false
             enabled: false
             visible: false
             opacity: 0
@@ -124,7 +128,14 @@ ApplicationWindow {
                 implicitHeight: cluster_button_offset*2
             }
             onClicked: {
-                helper.OnCalibrate()
+                if (begin_calibration){
+                    helper.OnCalibrate()
+                    begin_calibration_animation.running = true
+                }
+                else{
+                    calibrate_button_animation.running = true
+                }
+                
             }   
         }
 
@@ -173,6 +184,33 @@ ApplicationWindow {
             color: "white"
         }
 
+        Text{
+            id: counter
+            visible: false
+            opacity: 0
+            anchors.centerIn: parent
+            text: "3"
+            color: "white"
+            font.pointSize: 72
+        }
+
+        Image{
+            id: loading_icon
+            visible: false
+            opacity: 0
+            anchors.centerIn: parent;
+            source: "loading.png"
+            sourceSize: Qt.size(parent.width, parent.height)
+            rotation: 0
+            RotationAnimation on rotation{
+                target: loading_icon
+                loops: Animation.Infinite
+                from:0
+                to: 360
+                duration: 2000
+            }
+        }
+
         SequentialAnimation{
             id: parameters_button_animation
             running: false
@@ -190,13 +228,70 @@ ApplicationWindow {
             PropertyAction { target: calibrate_button; property: "visible"; value: false}
             PropertyAction { target: parameters_button; property: "visible"; value: false}
             PropertyAction { target: parameters_page; property: "enabled"; value: true}
+            PropertyAction { target: calibrate_button; property: "begin_calibration"; value: false}
+        }
+
+        SequentialAnimation{
+            id: calibrate_button_animation
+            running: false
+            PropertyAction { target: calibrate_button; property: "enabled"; value: false}
+            PropertyAction { target: parameters_button; property: "enabled"; value: false}
+            PropertyAction { target: pix_image; property: "visible"; value: true}
+            ParallelAnimation{
+                NumberAnimation{ target: cluster.anchors; property: "horizontalCenterOffset"; to: -window.width/2 + circle_diameter/2 + circle_thickness; duration: 1000; easing.type: Easing.InOutQuart}
+                PropertyAnimation { target: parameters_button; property: "opacity"; to: 0; easing.type: Easing.OutQuart; duration: 1000}
+                PropertyAnimation { target: divider; property: "opacity"; to: 0; easing.type: Easing.OutQuart; duration: 1000}
+                NumberAnimation { target: calibrate_button; property: "y"; to: (circle_diameter/2)-cluster_button_offset; easing.type: Easing.InOutQuart; duration: 1000}
+                PropertyAnimation { target: pix_image; property: "opacity"; from: 0; to: 1; easing.type: Easing.InQuart; duration: 1000}
+                ScaleAnimator { target: pix_image; from: 0.5; to: 1; duration: 1000; easing.type: Easing.OutQuart}
+            }
+            PropertyAction { target: calibrate_button; property: "enabled"; value: true}
+            PropertyAction { target: parameters_button; property: "visible"; value: false}
+            PropertyAction { target: divider; property: "visible"; value: false}
+            PropertyAction { target: calibrate_button; property: "begin_calibration"; value: true}
+
+        }
+
+        SequentialAnimation{
+            id: begin_calibration_animation
+            running: false
+            PropertyAction { target: calibrate_button; property: "enabled"; value: false}
+            PropertyAnimation { target: calibrate_button; property: "opacity"; to: 0; easing.type: Easing.OutQuart; duration: 1000}
+            PropertyAction { target: calibrate_button; property: "visible"; value: false}
+            PropertyAction { target: counter; property: "visible"; value: true}
+            PropertyAnimation { target: counter; property: "opacity"; from: 0; to: 1; easing.type: Easing.InQuart; duration: 500}
+            PropertyAnimation { target: counter; property: "opacity"; from: 1; to: 0; easing.type: Easing.OutQuart; duration: 500}
+            PropertyAction { target: counter; property: "text"; value: "2"}
+            PropertyAnimation { target: counter; property: "opacity"; from: 0; to: 1; easing.type: Easing.InQuart; duration: 500}
+            PropertyAnimation { target: counter; property: "opacity"; from: 1; to: 0; easing.type: Easing.OutQuart; duration: 500}
+            PropertyAction { target: counter; property: "text"; value: "1"}
+            PropertyAnimation { target: counter; property: "opacity"; from: 0; to: 1; easing.type: Easing.InQuart; duration: 500}
+            PropertyAnimation { target: counter; property: "opacity"; from: 1; to: 0; easing.type: Easing.OutQuart; duration: 500}
+            ScaleAnimator { target: loading_icon; to: 0; duration: 0; easing.type: Easing.OutQuart}
+            PropertyAction { target: loading_icon; property: "visible"; value: true}
+            ParallelAnimation{
+                ScaleAnimator { target: loading_icon; from: 0; to: 0.5; duration: 1000; easing.type: Easing.OutQuart}
+                PropertyAnimation { target: loading_icon; property: "opacity"; from: 0; to: 1; easing.type: Easing.OutQuart; duration: 500}
+            }
         }
     }
+
+    Rectangle{
+        id: pix_image
+        visible: false
+        opacity: 0
+        width: window.width-circle_diameter-circle_thickness*3
+        height: width*9/16
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenterOffset: window.width/2 - width/2 - circle_thickness
+        radius: 40
+    }
+
 
     Item{
         id: parameters_page
         anchors.centerIn: parent
-
         enabled: false
         visible: false
         opacity: 0
@@ -240,10 +335,7 @@ ApplicationWindow {
                         color: parameters_page.text_colour
                         font.pointSize: parameters_page.text_size
                     }
-                    
-                
                 }
-
                 Column{
                     spacing: parameters_page.column_spacing
                     TextField{
@@ -292,11 +384,9 @@ ApplicationWindow {
                             implicitWidth: parameters_page.str_input_width
                             implicitHeight: parameters_page.input_height
                         }
-                    }
-                
+                    }   
                 }
-            }
-            
+            }   
             Button{
                 anchors.horizontalCenter: parent.horizontalCenter
                 id: parameters_page_return_button
@@ -320,7 +410,6 @@ ApplicationWindow {
                 }
             }
         }
-
         SequentialAnimation{
             id: parameters_page_return_button_animation
             running: false
@@ -338,10 +427,6 @@ ApplicationWindow {
             PropertyAction { target: calibrate_button; property: "enabled"; value: true}
             PropertyAction { target: parameters_button; property: "enabled"; value: true}
             PropertyAction { target: parameters_page; property: "visible"; value: false}
-        }
-        
+        }   
     }
-
-    
-
 }
