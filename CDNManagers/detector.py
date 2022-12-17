@@ -2,18 +2,20 @@ from sys import maxsize
 import cv2
 import numpy as np
 from time import perf_counter
+#from ball_blender import Blender
 
 np.random.seed(0)
 
 
 class Detector:
-
-    def __init__(self, video_path, config_path, model_path, classes_path):
+    def __init__(self, video_path, config_path, model_path, classes_path, ui_object):
+    #def __init__(self, video_path, config_path, model_path, classes_path):
         self.video_path = video_path
         self.config_path = config_path
         self.model_path = model_path
         self.classes_path = classes_path
         self.running = False
+        self.ui_object = ui_object
 
         # Setup network model
         self.network = cv2.dnn_DetectionModel(self.model_path, self.config_path)
@@ -125,7 +127,9 @@ class Detector:
             # Draw FPS
             cv2.putText(image, f"FPS: {fps:.1f}", (20, 20), cv2.FONT_HERSHEY_DUPLEX, 0.4, (0, 0, 255), 1)
             # Show the object bounding boxes on the image
-            cv2.imshow("Result", cv2.resize(image, (1600, 900)))
+            #cv2.imshow("Result", cv2.resize(image, (1600, 900)))
+            cv2.imwrite("video.png", cv2.resize(image, (1600, 900)))
+            self.ui_object.updateImage()
 
             # Quit loop functionality
             # The & 0xFF is used to take the last byte of the key press since numlock can sometimes change the first byte of a key press. 

@@ -129,11 +129,12 @@ ApplicationWindow {
             }
             onClicked: {
                 if (begin_calibration){
-                    helper.OnCalibrate()
                     begin_calibration_animation.running = true
+                    helper.OnCalibrate()
                 }
                 else{
                     calibrate_button_animation.running = true
+                    helper.OnInitialise()
                 }
                 
             }   
@@ -276,16 +277,17 @@ ApplicationWindow {
         }
     }
 
-    Rectangle{
+    Image{
         id: pix_image
+        objectName: "pix_image"
         visible: false
         opacity: 0
+        source: "placeholder_image.png"
         width: window.width-circle_diameter-circle_thickness*3
         height: width*9/16
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenterOffset: window.width/2 - width/2 - circle_thickness
-        radius: 40
     }
 
 

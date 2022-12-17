@@ -32,7 +32,7 @@ class CDNApp(QWidget):
         self.has_calibrated = False
         self.has_started = False
         # Managers
-        #self.connectionManager = Connect()
+        self.connectionManager = Connect()
         self.calibrationManager = Calibrate()
         self.detector = Detector(*resolve_files())
         self.cv = CV(self.detector, "stop sign")
@@ -94,7 +94,7 @@ class CDNApp(QWidget):
     def onConnect(self):
         self.has_conn = True
         self.calibrate.setEnabled(self.has_conn)
-        #self.connectionManager.start_connection()
+        self.connectionManager.start_connection()
         self.conn.setEnabled(not self.has_conn)
     
     def onReset(self):
