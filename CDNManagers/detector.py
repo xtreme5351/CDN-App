@@ -2,6 +2,7 @@ from sys import maxsize
 import cv2
 import numpy as np
 from time import perf_counter
+import threading
 #from ball_blender import Blender
 
 np.random.seed(0)
@@ -66,6 +67,7 @@ class Detector:
         # Keep looping through frames while the frames are successfully loaded
         start = perf_counter()
         self.running = True
+        self.number = 0
         while successful and self.running:
             # Calculate FPS
             end = perf_counter()
@@ -128,8 +130,13 @@ class Detector:
             cv2.putText(image, f"FPS: {fps:.1f}", (20, 20), cv2.FONT_HERSHEY_DUPLEX, 0.4, (0, 0, 255), 1)
             # Show the object bounding boxes on the image
             #cv2.imshow("Result", cv2.resize(image, (1600, 900)))
-            cv2.imwrite("video.png", cv2.resize(image, (1600, 900)))
-            self.ui_object.updateImage()
+            cv2.imwrite("video" + str(self.number) + ".png", cv2.resize(image, (1600, 900)))
+            print("pp")
+            #self.ui_object.worker.RerenderCommand(self.number)
+            self.ui_object.rerender = True
+            self.ui_object.render_number = self.number
+            self.number += 1
+            self.number = self.number % 2
 
             # Quit loop functionality
             # The & 0xFF is used to take the last byte of the key press since numlock can sometimes change the first byte of a key press. 
