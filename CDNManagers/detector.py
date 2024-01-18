@@ -131,7 +131,7 @@ class Detector:
             # Show the object bounding boxes on the image
             #cv2.imshow("Result", cv2.resize(image, (1600, 900)))
             cv2.imwrite("video" + str(self.number) + ".png", cv2.resize(image, (1600, 900)))
-            print("pp")
+            #print("pp")
             #self.ui_object.worker.RerenderCommand(self.number)
             self.ui_object.rerender = True
             self.ui_object.render_number = self.number
